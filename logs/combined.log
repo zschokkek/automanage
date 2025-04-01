@@ -1,0 +1,11 @@
+{"level":"info","message":"Created directory: /Users/kylezschokke/Desktop/fantasy-llm/CascadeProjects/windsurf-project/fantasy-analyzer/data","service":"fantasy-analyzer","timestamp":"2025-03-31 14:06:00"}
+{"level":"info","message":"Server running on port 3000","service":"fantasy-analyzer","timestamp":"2025-03-31 14:06:00"}
+{"level":"info","message":"Open http://localhost:3000 in your browser","service":"fantasy-analyzer","timestamp":"2025-03-31 14:06:00"}
+{"level":"info","message":"MongoDB connected successfully","service":"fantasy-analyzer","timestamp":"2025-03-31 14:06:00"}
+{"level":"info","message":"Database connection established","service":"fantasy-analyzer","timestamp":"2025-03-31 14:06:00"}
+{"level":"warn","message":"MongoDB disconnected","service":"fantasy-analyzer","timestamp":"2025-03-31 14:28:27"}
+{"level":"info","message":"Server running on port 3000","service":"fantasy-analyzer","timestamp":"2025-03-31 14:28:34"}
+{"level":"info","message":"Open http://localhost:3000 in your browser","service":"fantasy-analyzer","timestamp":"2025-03-31 14:28:34"}
+{"level":"info","message":"MongoDB connected successfully","service":"fantasy-analyzer","timestamp":"2025-03-31 14:28:34"}
+{"level":"info","message":"Database connection established","service":"fantasy-analyzer","timestamp":"2025-03-31 14:28:34"}
+{"level":"warn","message":"MongoDB disconnected","service":"fantasy-analyzer","timestamp":"2025-03-31 16:28:43"}
