@@ -2,16 +2,87 @@ const axios = require('axios');
 const logger = require('../utils/logger');
 
 class FantraxService {
-  constructor(accessToken) {
+  /**
+   * Create a new Fantrax service
+   * @param {Object} options - Options for the service
+   * @param {string} options.email - Fantrax email
+   * @param {string} options.password - Fantrax password
+   */
+  constructor(options = {}) {
+    this.email = options.email;
+    this.password = options.password;
+    this.isAuthenticated = false;
+    
     this.apiClient = axios.create({
-      baseURL: 'https://www.fantrax.com/fxpa/req',
+      baseURL: 'https://www.fantrax.com/api/v3',
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
       },
       withCredentials: true
     });
+    
+    // Add response interceptor to handle authentication errors
+    this.apiClient.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        if (error.response && error.response.status === 401 && !this.isAuthenticated) {
+          // Try to authenticate and retry the request
+          try {
+            await this.authenticate();
+            // Retry the original request
+            return this.apiClient(error.config);
+          } catch (authError) {
+            logger.error(`Authentication failed: ${authError.message}`);
+            return Promise.reject(error);
+          }
+        }
+        return Promise.reject(error);
+      }
+    );
+  }
+
+  /**
+   * Authenticate with Fantrax using email and password
+   * @returns {Promise<boolean>} True if authentication was successful
+   */
+  async authenticate() {
+    try {
+      if (!this.email || !this.password) {
+        throw new Error('Email and password are required for authentication');
+      }
+      
+      const response = await axios.post('https://www.fantrax.com/api/v3/users/login', {
+        email: this.email,
+        password: this.password,
+        rememberMe: true
+      }, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+      });
+      
+      if (response.status === 200) {
+        // Get cookies from response
+        const cookies = response.headers['set-cookie'];
+        if (cookies) {
+          // Set cookies for future requests
+          this.apiClient.defaults.headers.Cookie = cookies.join('; ');
+        }
+        
+        this.isAuthenticated = true;
+        logger.info('Successfully authenticated with Fantrax');
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      logger.error(`Authentication failed: ${error.message}`);
+      throw new Error(`Failed to authenticate with Fantrax: ${error.message}`);
+    }
   }
 
   /**
@@ -20,17 +91,20 @@ class FantraxService {
    */
   async getUserLeagues() {
     try {
-      const response = await this.apiClient.post('/leagues', {
-        msgs: [{
-          method: 'getLeaguesForCurrentUser',
-          data: {
-            'filter.sport': 'NFL'
-          }
-        }]
+      // Ensure we're authenticated
+      if (!this.isAuthenticated) {
+        await this.authenticate();
+      }
+      
+      const response = await this.apiClient.get('/leagues', {
+        params: {
+          sport: 'NFL',
+          view: 'CURRENT_SEASON'
+        }
       });
       
-      if (response.data && response.data.responses && response.data.responses[0]) {
-        return response.data.responses[0].data || [];
+      if (response.data && response.data.leagues) {
+        return response.data.leagues || [];
       }
       
       return [];
@@ -47,17 +121,15 @@ class FantraxService {
    */
   async getLeagueSettings(leagueId) {
     try {
-      const response = await this.apiClient.post('/league-settings', {
-        msgs: [{
-          method: 'getLeagueSettings',
-          data: {
-            leagueId: leagueId
-          }
-        }]
-      });
+      // Ensure we're authenticated
+      if (!this.isAuthenticated) {
+        await this.authenticate();
+      }
       
-      if (response.data && response.data.responses && response.data.responses[0]) {
-        return response.data.responses[0].data || {};
+      const response = await this.apiClient.get(`/leagues/${leagueId}/settings`);
+      
+      if (response.data) {
+        return response.data || {};
       }
       
       return {};
@@ -75,18 +147,15 @@ class FantraxService {
    */
   async getUserRoster(leagueId, teamId) {
     try {
-      const response = await this.apiClient.post('/roster', {
-        msgs: [{
-          method: 'getRosterForTeam',
-          data: {
-            leagueId: leagueId,
-            teamId: teamId
-          }
-        }]
-      });
+      // Ensure we're authenticated
+      if (!this.isAuthenticated) {
+        await this.authenticate();
+      }
       
-      if (response.data && response.data.responses && response.data.responses[0]) {
-        return response.data.responses[0].data || {};
+      const response = await this.apiClient.get(`/leagues/${leagueId}/teams/${teamId}/roster`);
+      
+      if (response.data) {
+        return response.data || {};
       }
       
       return {};
@@ -104,18 +173,19 @@ class FantraxService {
    */
   async getWeeklyMatchups(leagueId, period) {
     try {
-      const response = await this.apiClient.post('/schedule', {
-        msgs: [{
-          method: 'getScheduleForLeague',
-          data: {
-            leagueId: leagueId,
-            scoringPeriod: period
-          }
-        }]
+      // Ensure we're authenticated
+      if (!this.isAuthenticated) {
+        await this.authenticate();
+      }
+      
+      const response = await this.apiClient.get(`/leagues/${leagueId}/schedule`, {
+        params: {
+          scoringPeriod: period
+        }
       });
       
-      if (response.data && response.data.responses && response.data.responses[0]) {
-        return response.data.responses[0].data || [];
+      if (response.data && response.data.matchups) {
+        return response.data.matchups || [];
       }
       
       return [];
@@ -133,18 +203,19 @@ class FantraxService {
    */
   async getPlayerBoxScores(leagueId, period) {
     try {
-      const response = await this.apiClient.post('/scoring-stats', {
-        msgs: [{
-          method: 'getScoringStatsForLeague',
-          data: {
-            leagueId: leagueId,
-            scoringPeriod: period
-          }
-        }]
+      // Ensure we're authenticated
+      if (!this.isAuthenticated) {
+        await this.authenticate();
+      }
+      
+      const response = await this.apiClient.get(`/leagues/${leagueId}/scoring-stats`, {
+        params: {
+          scoringPeriod: period
+        }
       });
       
-      if (response.data && response.data.responses && response.data.responses[0]) {
-        return response.data.responses[0].data || {};
+      if (response.data && response.data.playerStats) {
+        return response.data.playerStats || {};
       }
       
       return {};
@@ -161,18 +232,19 @@ class FantraxService {
    */
   async getAvailablePlayers(leagueId) {
     try {
-      const response = await this.apiClient.post('/players', {
-        msgs: [{
-          method: 'getAvailablePlayers',
-          data: {
-            leagueId: leagueId,
-            'filter.statusOrAvailability': 'AVAILABLE'
-          }
-        }]
+      // Ensure we're authenticated
+      if (!this.isAuthenticated) {
+        await this.authenticate();
+      }
+      
+      const response = await this.apiClient.get(`/leagues/${leagueId}/players`, {
+        params: {
+          statusOrAvailability: 'AVAILABLE'
+        }
       });
       
-      if (response.data && response.data.responses && response.data.responses[0]) {
-        return response.data.responses[0].data || [];
+      if (response.data && response.data.players) {
+        return response.data.players || [];
       }
       
       return [];
@@ -189,23 +261,81 @@ class FantraxService {
    */
   async getPlayerNews(playerId) {
     try {
-      const response = await this.apiClient.post('/player-news', {
-        msgs: [{
-          method: 'getPlayerNews',
-          data: {
-            playerId: playerId
-          }
-        }]
-      });
+      // Ensure we're authenticated
+      if (!this.isAuthenticated) {
+        await this.authenticate();
+      }
       
-      if (response.data && response.data.responses && response.data.responses[0]) {
-        return response.data.responses[0].data || [];
+      const response = await this.apiClient.get(`/players/${playerId}/news`);
+      
+      if (response.data && response.data.news) {
+        return response.data.news || [];
       }
       
       return [];
     } catch (error) {
       logger.error(`Error fetching Fantrax player news: ${error.message}`);
       throw new Error(`Failed to fetch Fantrax player news: ${error.message}`);
+    }
+  }
+  
+  /**
+   * Test the API connection
+   * @returns {Promise<boolean>} True if connection is successful
+   */
+  async testConnection() {
+    try {
+      // Ensure we're authenticated
+      if (!this.isAuthenticated) {
+        await this.authenticate();
+      }
+      
+      const response = await this.apiClient.get('/user');
+      return response.status === 200;
+    } catch (error) {
+      logger.error(`Error testing Fantrax connection: ${error.message}`);
+      return false;
+    }
+  }
+
+  /**
+   * Get public league data without requiring authentication
+   * @param {string} leagueId - Fantrax league ID
+   * @returns {Promise<Object>} Public league data
+   */
+  async getPublicLeagueData(leagueId) {
+    try {
+      // Create a new axios instance without authentication
+      const publicClient = axios.create({
+        baseURL: 'https://www.fantrax.com/api/v3',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+      });
+      
+      // Get basic league info
+      const leagueResponse = await publicClient.get(`/leagues/${leagueId}`);
+      
+      if (!leagueResponse.data || leagueResponse.status !== 200) {
+        throw new Error('League not found or not public');
+      }
+      
+      // Get league standings
+      const standingsResponse = await publicClient.get(`/leagues/${leagueId}/standings`);
+      
+      // Get league teams
+      const teamsResponse = await publicClient.get(`/leagues/${leagueId}/teams`);
+      
+      return {
+        leagueInfo: leagueResponse.data,
+        standings: standingsResponse.data?.standings || [],
+        teams: teamsResponse.data?.teams || []
+      };
+    } catch (error) {
+      logger.error(`Error fetching public league data: ${error.message}`);
+      throw new Error(`Failed to fetch public league data: ${error.message}`);
     }
   }
 }

@@ -57,7 +57,24 @@ router.post('/sync', isAuthenticated, async (req, res) => {
             leagues = await sleeperService.getUserLeagues(currentYear);
             break;
           case 'fantrax':
-            const fantraxService = new FantraxService(platform.accessToken);
+            // Use email and password for Fantrax
+            if (!platform.email || !platform.password) {
+              syncResults.errors.push('Fantrax email and password are required. Please update your platform settings.');
+              continue;
+            }
+            
+            const fantraxService = new FantraxService({
+              email: platform.email,
+              password: platform.password
+            });
+            
+            // Test connection before proceeding
+            const isConnected = await fantraxService.testConnection();
+            if (!isConnected) {
+              syncResults.errors.push('Failed to authenticate with Fantrax. Please check your credentials.');
+              continue;
+            }
+            
             leagues = await fantraxService.getUserLeagues();
             break;
           default:
@@ -240,7 +257,21 @@ router.get('/:id/roster/:week', isAuthenticated, async (req, res) => {
           rosterData = leagueRosters.find(r => r.owner_id === platform.userId);
           break;
         case 'fantrax':
-          const fantraxService = new FantraxService(platform.accessToken);
+          // Use email and password for Fantrax
+          if (!platform.email || !platform.password) {
+            return res.status(400).json({ error: 'No Fantrax email and password found. Please authenticate with Fantrax first.' });
+          }
+          const fantraxService = new FantraxService({
+            email: platform.email,
+            password: platform.password
+          });
+          
+          // Test connection before proceeding
+          const isConnected = await fantraxService.testConnection();
+          if (!isConnected) {
+            return res.status(400).json({ error: 'Failed to authenticate with Fantrax. Please update your credentials.' });
+          }
+          
           rosterData = await fantraxService.getUserRoster(league.platformLeagueId, userTeam.platformTeamId);
           break;
         default:
@@ -261,6 +292,31 @@ router.get('/:id/roster/:week', isAuthenticated, async (req, res) => {
   } catch (error) {
     logger.error(`Error fetching roster: ${error.message}`);
     res.status(500).json({ error: 'Failed to fetch roster' });
+  }
+});
+
+// Get public league data by ID (no authentication required)
+router.get('/public/:platform/:leagueId', async (req, res) => {
+  try {
+    const { platform, leagueId } = req.params;
+    
+    if (platform !== 'fantrax') {
+      return res.status(400).json({ error: 'Only Fantrax public leagues are currently supported' });
+    }
+    
+    // Create Fantrax service without authentication
+    const fantraxService = new FantraxService();
+    
+    // Get public league data
+    const leagueData = await fantraxService.getPublicLeagueData(leagueId);
+    
+    res.json({ 
+      success: true, 
+      leagueData 
+    });
+  } catch (error) {
+    logger.error(`Error fetching public league data: ${error.message}`);
+    res.status(500).json({ error: `Failed to fetch public league data: ${error.message}` });
   }
 });
 
