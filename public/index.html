@@ -3,95 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fantasy Football Analyzer</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <title>Fantasy Sports Analyzer</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/dist/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
 </head>
-<body class="bg-gray-100 min-h-screen">
-    <header class="bg-blue-800 text-white shadow-lg">
+<body class="bg-gray-50 min-h-screen dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <header class="bg-gradient-to-r from-blue-800 to-indigo-900 text-white shadow-lg">
         <div class="container mx-auto px-4 py-6">
-            <h1 class="text-3xl font-bold">Fantasy Football Analyzer</h1>
-            <p class="text-blue-200">Get weekly insights for your fantasy teams</p>
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-bold">Fantasy Sports Analyzer</h1>
+                    <p class="text-blue-200">Advanced insights for your fantasy teams</p>
+                </div>
+                <div>
+                    <button id="theme-toggle" class="p-2 rounded-full hover:bg-blue-700">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </header>
 
     <main class="container mx-auto px-4 py-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- League Import Section -->
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-2xl font-semibold mb-4">Import Your League</h2>
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 lg:col-span-1">
+                <h2 class="text-2xl font-semibold mb-4 border-b pb-2 dark:border-gray-700">Import Your League</h2>
                 
                 <div class="mb-6">
-                    <h3 class="text-lg font-medium mb-2">ESPN Leagues</h3>
+                    <h3 class="text-lg font-medium mb-2 flex items-center">
+                        <i class="fas fa-football-ball mr-2 text-red-600"></i>ESPN Leagues
+                    </h3>
                     <form id="espn-form" class="space-y-4">
                         <div>
-                            <label class="block text-gray-700 mb-1">League ID</label>
-                            <input type="text" id="espn-league-id" class="w-full px-3 py-2 border rounded-md" placeholder="12345678">
+                            <label class="block text-gray-700 dark:text-gray-300 mb-1">League ID</label>
+                            <input type="text" id="espn-league-id" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600" placeholder="12345678">
                         </div>
                         <div>
-                            <label class="block text-gray-700 mb-1">Season Year</label>
-                            <input type="number" id="espn-year" class="w-full px-3 py-2 border rounded-md" value="2025">
+                            <label class="block text-gray-700 dark:text-gray-300 mb-1">Season Year</label>
+                            <input type="number" id="espn-year" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600" value="2025">
                         </div>
                         <div>
-                            <label class="block text-gray-700 mb-1">Team ID (optional)</label>
-                            <input type="number" id="espn-team-id" class="w-full px-3 py-2 border rounded-md" placeholder="1">
+                            <label class="block text-gray-700 dark:text-gray-300 mb-1">Team ID (optional)</label>
+                            <input type="number" id="espn-team-id" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600" placeholder="1">
                         </div>
-                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Import ESPN League</button>
+                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition flex items-center justify-center">
+                            <i class="fas fa-file-import mr-2"></i>Import ESPN League
+                        </button>
                     </form>
                 </div>
                 
                 <div class="mb-6">
-                    <h3 class="text-lg font-medium mb-2">Sleeper Leagues</h3>
+                    <h3 class="text-lg font-medium mb-2 flex items-center">
+                        <i class="fas fa-moon mr-2 text-purple-600"></i>Sleeper Leagues
+                    </h3>
                     <form id="sleeper-form" class="space-y-4">
                         <div>
-                            <label class="block text-gray-700 mb-1">League ID</label>
-                            <input type="text" id="sleeper-league-id" class="w-full px-3 py-2 border rounded-md" placeholder="123456789012345678">
+                            <label class="block text-gray-700 dark:text-gray-300 mb-1">League ID</label>
+                            <input type="text" id="sleeper-league-id" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600" placeholder="123456789012345678">
                         </div>
                         <div>
-                            <label class="block text-gray-700 mb-1">Username</label>
-                            <input type="text" id="sleeper-username" class="w-full px-3 py-2 border rounded-md" placeholder="your_username">
+                            <label class="block text-gray-700 dark:text-gray-300 mb-1">Username</label>
+                            <input type="text" id="sleeper-username" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600" placeholder="your_username">
                         </div>
-                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Import Sleeper League</button>
+                        <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition flex items-center justify-center">
+                            <i class="fas fa-file-import mr-2"></i>Import Sleeper League
+                        </button>
                     </form>
                 </div>
                 
                 <div>
-                    <h3 class="text-lg font-medium mb-2">Fantrax Leagues</h3>
+                    <h3 class="text-lg font-medium mb-2 flex items-center">
+                        <i class="fas fa-chart-line mr-2 text-blue-500"></i>Fantrax Leagues
+                    </h3>
                     <form id="fantrax-form" class="space-y-4">
                         <div>
-                            <label class="block text-gray-700 mb-1">League ID</label>
-                            <input type="text" id="fantrax-league-id" class="w-full px-3 py-2 border rounded-md" placeholder="abc123def456">
+                            <label class="block text-gray-700 dark:text-gray-300 mb-1">League ID</label>
+                            <input type="text" id="fantrax-league-id" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600" placeholder="abc123def456">
                         </div>
                         <div>
-                            <label class="block text-gray-700 mb-1">Email</label>
-                            <input type="email" id="fantrax-email" class="w-full px-3 py-2 border rounded-md" placeholder="your@email.com">
+                            <label class="block text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                            <input type="email" id="fantrax-email" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600" placeholder="your@email.com">
                         </div>
-                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Import Fantrax League</button>
+                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition flex items-center justify-center">
+                            <i class="fas fa-file-import mr-2"></i>Import Fantrax League
+                        </button>
                     </form>
                 </div>
             </div>
             
             <!-- League Status Section -->
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-2xl font-semibold mb-4">Your Leagues</h2>
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 lg:col-span-2">
+                <h2 class="text-2xl font-semibold mb-4 border-b pb-2 dark:border-gray-700">Your Leagues</h2>
                 <div id="leagues-container" class="space-y-4">
-                    <p class="text-gray-500 italic">No leagues imported yet. Use the form to import your leagues.</p>
+                    <p class="text-gray-500 dark:text-gray-400 italic">No leagues imported yet. Use the form to import your leagues.</p>
                 </div>
             </div>
         </div>
         
+        <!-- Custom Analysis Query Section -->
+        <div class="mt-8 bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+            <h2 class="text-2xl font-semibold mb-4 border-b pb-2 dark:border-gray-700 flex items-center">
+                <i class="fas fa-search mr-2 text-indigo-600"></i>Custom Analysis Query
+            </h2>
+            <form id="custom-query-form" class="space-y-4">
+                <div>
+                    <label class="block text-gray-700 dark:text-gray-300 mb-1">Select League</label>
+                    <select id="query-league-select" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600">
+                        <option value="">-- Select a league --</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-700 dark:text-gray-300 mb-1">Analysis Question</label>
+                    <textarea id="query-text" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600" rows="3" placeholder="Ask a specific question about your team or league (e.g., 'Which of my players should I consider trading?' or 'Who are the top waiver wire pickups this week?')"></textarea>
+                </div>
+                <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition flex items-center justify-center">
+                    <i class="fas fa-analytics mr-2"></i>Generate Custom Analysis
+                </button>
+            </form>
+        </div>
+        
         <!-- Analysis Section -->
-        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-2xl font-semibold mb-4">Weekly Analysis</h2>
+        <div class="mt-8 bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+            <h2 class="text-2xl font-semibold mb-4 border-b pb-2 dark:border-gray-700 flex items-center">
+                <i class="fas fa-chart-pie mr-2 text-green-600"></i>Fantasy Analysis
+            </h2>
             <div id="analysis-container">
-                <p class="text-gray-500 italic">Import a league and generate an analysis to see results here.</p>
+                <p class="text-gray-500 dark:text-gray-400 italic">Import a league and generate an analysis to see results here.</p>
+            </div>
+        </div>
+
+        <!-- Visualization Dashboard -->
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                <h3 class="text-xl font-semibold mb-4 border-b pb-2 dark:border-gray-700">Team Performance</h3>
+                <div class="h-80">
+                    <canvas id="team-performance-chart"></canvas>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                <h3 class="text-xl font-semibold mb-4 border-b pb-2 dark:border-gray-700">Position Breakdown</h3>
+                <div class="h-80">
+                    <canvas id="position-breakdown-chart"></canvas>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                <h3 class="text-xl font-semibold mb-4 border-b pb-2 dark:border-gray-700">Player Comparison</h3>
+                <div class="h-80">
+                    <canvas id="player-comparison-chart"></canvas>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                <h3 class="text-xl font-semibold mb-4 border-b pb-2 dark:border-gray-700">Projected Points</h3>
+                <div class="h-80">
+                    <canvas id="projected-points-chart"></canvas>
+                </div>
             </div>
         </div>
     </main>
 
-    <footer class="bg-gray-800 text-white mt-12 py-6">
+    <footer class="bg-gray-800 dark:bg-gray-950 text-white mt-12 py-6">
         <div class="container mx-auto px-4">
-            <p class="text-center">&copy; 2025 Fantasy Football Analyzer</p>
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <p>&copy; 2025 Fantasy Sports Analyzer</p>
+                <div class="flex space-x-4 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-blue-400 transition"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="hover:text-blue-400 transition"><i class="fab fa-github"></i></a>
+                    <a href="#" class="hover:text-blue-400 transition"><i class="fab fa-discord"></i></a>
+                </div>
+            </div>
         </div>
     </footer>
 

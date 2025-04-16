@@ -1,4 +1,40 @@
-/* Custom styles for Fantasy Football Analyzer */
+/* Modern styles for Fantasy Sports Analyzer */
+
+:root {
+  --primary-color: #4f46e5;
+  --primary-hover: #4338ca;
+  --secondary-color: #10b981;
+  --secondary-hover: #059669;
+  --danger-color: #ef4444;
+  --danger-hover: #dc2626;
+  --warning-color: #f59e0b;
+  --warning-hover: #d97706;
+  --success-color: #10b981;
+  --success-hover: #059669;
+  --info-color: #3b82f6;
+  --info-hover: #2563eb;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-tertiary: #9ca3af;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --bg-tertiary: #f3f4f6;
+  --border-color: #e5e7eb;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --transition-base: all 0.2s ease-in-out;
+}
+
+.dark {
+  --text-primary: #f9fafb;
+  --text-secondary: #e5e7eb;
+  --text-tertiary: #9ca3af;
+  --bg-primary: #1f2937;
+  --bg-secondary: #111827;
+  --bg-tertiary: #374151;
+  --border-color: #4b5563;
+}
 
 /* Animations */
 @keyframes fadeIn {
@@ -6,18 +42,37 @@
   to { opacity: 1; }
 }
 
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
 .fade-in {
   animation: fadeIn 0.5s ease-in;
 }
 
-/* Custom card styles */
+.slide-up {
+  animation: slideUp 0.5s ease-out;
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+/* Card styles */
 .league-card {
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.3s, box-shadow 0.3s;
+  border-radius: 0.75rem;
 }
 
 .league-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
 }
 
 /* Platform badges */
@@ -28,6 +83,7 @@
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .platform-espn {
@@ -47,14 +103,14 @@
 
 /* Analysis report styling */
 .analysis-report {
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
 .analysis-section {
   margin-bottom: 2rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .analysis-section:last-child {
@@ -64,28 +120,34 @@
 .analysis-section h3 {
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid #4299e1;
+  border-bottom: 2px solid var(--primary-color);
   display: inline-block;
 }
 
 .player-item {
-  padding: 0.75rem;
-  margin-bottom: 0.5rem;
-  border-radius: 0.375rem;
-  background-color: #f9fafb;
-  border-left: 4px solid #4299e1;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  border-radius: 0.5rem;
+  background-color: var(--bg-secondary);
+  border-left: 4px solid var(--info-color);
+  transition: var(--transition-base);
+}
+
+.player-item:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-md);
 }
 
 .trending-up {
-  border-left-color: #48bb78;
+  border-left-color: var(--success-color);
 }
 
 .trending-down {
-  border-left-color: #f56565;
+  border-left-color: var(--danger-color);
 }
 
 .waiver-high {
-  border-left-color: #ed8936;
+  border-left-color: var(--warning-color);
 }
 
 .waiver-streamer {
@@ -93,14 +155,14 @@
 }
 
 .waiver-stash {
-  border-left-color: #4299e1;
+  border-left-color: var(--info-color);
 }
 
 /* Loading spinner */
 .loading-spinner {
   display: inline-block;
-  width: 2rem;
-  height: 2rem;
+  width: 2.5rem;
+  height: 2.5rem;
   border: 0.25rem solid rgba(66, 153, 225, 0.3);
   border-radius: 50%;
   border-top-color: #4299e1;
@@ -114,26 +176,217 @@
 /* Toast notifications */
 .toast {
   position: fixed;
-  top: 1rem;
-  right: 1rem;
-  padding: 1rem;
-  border-radius: 0.375rem;
-  background-color: white;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  top: 1.5rem;
+  right: 1.5rem;
+  padding: 1rem 1.5rem;
+  border-radius: 0.5rem;
+  background-color: var(--bg-primary);
+  box-shadow: var(--shadow-lg);
   z-index: 50;
   max-width: 24rem;
   animation: slideIn 0.3s ease-out;
+  display: flex;
+  align-items: center;
 }
 
 .toast-success {
-  border-left: 4px solid #48bb78;
+  border-left: 4px solid var(--success-color);
 }
 
 .toast-error {
-  border-left: 4px solid #f56565;
+  border-left: 4px solid var(--danger-color);
+}
+
+.toast-info {
+  border-left: 4px solid var(--info-color);
+}
+
+.toast-warning {
+  border-left: 4px solid var(--warning-color);
 }
 
 @keyframes slideIn {
   from { transform: translateX(100%); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
+}
+
+/* Chart container styles */
+.chart-container {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-tertiary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* Stat cards */
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--bg-secondary);
+  border-left: 4px solid var(--primary-color);
+  transition: var(--transition-base);
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.stat-card-title {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.stat-card-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.stat-card-change {
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+.stat-card-change.positive {
+  color: var(--success-color);
+}
+
+.stat-card-change.negative {
+  color: var(--danger-color);
+}
+
+/* Player comparison table */
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.comparison-table th,
+.comparison-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.comparison-table th {
+  background-color: var(--bg-tertiary);
+  font-weight: 600;
+}
+
+.comparison-table tr:last-child td {
+  border-bottom: none;
+}
+
+.comparison-table tr:hover td {
+  background-color: var(--bg-tertiary);
+}
+
+/* Custom select styling */
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+  padding-right: 2.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .toast {
+    left: 1rem;
+    right: 1rem;
+    max-width: calc(100% - 2rem);
+  }
+}
+
+/* Fade out animation */
+.fade-out {
+  animation: fadeOut 0.3s ease-out forwards;
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Custom query section */
+.custom-query-container {
+  border-radius: 0.5rem;
+  transition: var(--transition-base);
+}
+
+.custom-query-container:focus-within {
+  box-shadow: var(--shadow-md);
+}
+
+/* Visualization tooltip */
+.chart-tooltip {
+  background-color: var(--bg-primary);
+  border-radius: 0.375rem;
+  padding: 0.75rem;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-color);
+  font-size: 0.875rem;
+  z-index: 10;
+}
+
+/* Highlight for selected players */
+.player-highlight {
+  background-color: rgba(79, 70, 229, 0.1);
+  border-color: var(--primary-color);
+}
+
+/* Team strength meter */
+.strength-meter {
+  height: 8px;
+  border-radius: 4px;
+  background-color: #e5e7eb;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.strength-meter-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease-out;
+}
+
+.strength-meter-fill.excellent {
+  background-color: #10b981;
+}
+
+.strength-meter-fill.good {
+  background-color: #3b82f6;
+}
+
+.strength-meter-fill.average {
+  background-color: #f59e0b;
+}
+
+.strength-meter-fill.poor {
+  background-color: #ef4444;
 }

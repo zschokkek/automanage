@@ -1,4 +1,4 @@
-/**
+ex/**
  * Fantrax Authentication Utility
  * 
  * This utility helps authenticate with Fantrax using email and password.
